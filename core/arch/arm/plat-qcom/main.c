@@ -7,6 +7,7 @@
 #include <console.h>
 #include <drivers/gic.h>
 #include <drivers/qcom_geni_uart.h>
+#include <initcall.h>
 #include <kernel/boot.h>
 #include <mm/core_mmu.h>
 #include <platform_config.h>
@@ -33,6 +34,14 @@ void plat_console_init(void)
 	qcom_geni_uart_init(&console_data, GENI_UART_REG_BASE);
 	register_serial_console(&console_data.chip);
 }
+
+static TEE_Result plat_console_deinit(void)
+{
+	register_serial_console(NULL);
+
+	return TEE_SUCCESS;
+}
+boot_final(plat_console_deinit);
 
 void boot_primary_init_intc(void)
 {
